@@ -31,7 +31,7 @@ class Trainer:
         self.name = name
         self.K_min = K_min
         self.K_max = K_max
-        self.walkers_num = 2_000_000 // self.K_max #1 000 000
+        self.walkers_num = 1_000_000 // self.K_max #1 000 000
         self.all_moves = all_moves
         self.n_gens = all_moves.size(0)
         self.state_size = all_moves.size(1)
