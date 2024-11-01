@@ -31,7 +31,7 @@ class Trainer:
         self.name = name
         self.K_min = K_min
         self.K_max = K_max
-        self.walkers_num = 1_000_000 // self.K_max
+        self.walkers_num = 2_000_000 // self.K_max #1 000 000
         self.all_moves = all_moves
         self.n_gens = all_moves.size(0)
         self.state_size = all_moves.size(1)
@@ -88,7 +88,9 @@ class Trainer:
 
             # Data generation
             data_gen_start = time.time()
-            X, Y = self.generate_random_walks(k=self.walkers_num, K_min=self.K_min, K_max=self.K_max)
+            if (self.epoch-1)%4096==0:
+                print(f'generate_random_walks epoch-1:{self.epoch-1}, walkers_num:{self.walkers_num}, K_min:{self.K_min}, K_max:{self.K_max}')
+                X, Y = self.generate_random_walks(k=self.walkers_num, K_min=self.K_min, K_max=self.K_max)
             data_gen_time = time.time() - data_gen_start
 
             # Training step
@@ -116,13 +118,31 @@ class Trainer:
                 timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
                 print(f"[{timestamp}] Saved weights at epoch {self.epoch:5d}. Train Loss: {train_loss:.2f}")
 
-            # Save weights at 10,000 and 50,000 epochs
-            if self.epoch in [10000, 50000]:
+            # Save weights at4096 epochs
+            if (self.epoch-1+1)%4096==0:
+                print(f'torch.save: {weights_file}')
                 weights_file = f"{self.weights_dir}/{self.name}_{self.id}_e{self.epoch:05d}.pth"
                 torch.save(self.net.state_dict(), weights_file)
 
                 # Print saving information with timestamp and train loss
                 timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+
+            # Save weights at 100 epochs
+            if (self.epoch-1+1)%100==0:
+                print(f'torch.save: {weights_file}')
+                weights_file = f"{self.weights_dir}/{self.name}_{self.id}_e{self.epoch:05d}.pth"
+                torch.save(self.net.state_dict(), weights_file)
+
+                # Print saving information with timestamp and train loss
+                timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) 
+
+            # Save weights at 10,000 and 50,000 epochs
+            if self.epoch in [10000, 50000 , 1, 2 ,4, 8, 16, 4096, 4097, 4099, 4104, 4112]:
+                weights_file = f"{self.weights_dir}/{self.name}_{self.id}_e{self.epoch:05d}.pth"
+                torch.save(self.net.state_dict(), weights_file)
+
+                # Print saving information with timestamp and train loss
+                timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())        
 
         # Save final weights
         final_weights_file = f"{self.weights_dir}/{self.name}_{self.id}_e{self.epoch:05d}final.pth"
