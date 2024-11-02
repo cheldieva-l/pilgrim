@@ -10,7 +10,9 @@ class Trainer:
                  net, num_epochs, device, 
                  batch_size=10000, lr=0.001, name="", K_min=1, K_max=55, 
                  all_moves=None, inverse_moves=None, V0=None, 
-                 optimizer='Adam' # Adam or AdamSF
+                 optimizer='Adam', # Adam or AdamSF
+                 train_size = 2_000_000, # #1 000 000
+                 generate_train_epoch=256  #4096 128
                 ):
         self.net = net.to(device)
         self.lr = lr
@@ -31,7 +33,7 @@ class Trainer:
         self.name = name
         self.K_min = K_min
         self.K_max = K_max
-        self.walkers_num = 1_000_000 // self.K_max #1 000 000
+        self.walkers_num = train_size // self.K_max #1 000 000
         self.all_moves = all_moves
         self.n_gens = all_moves.size(0)
         self.state_size = all_moves.size(1)
@@ -88,7 +90,7 @@ class Trainer:
 
             # Data generation
             data_gen_start = time.time()
-            if (self.epoch-1)%4096==0:
+            if (self.epoch-1)%generate_train_epoch==0: #4096
                 print(f'generate_random_walks epoch-1:{self.epoch-1}, walkers_num:{self.walkers_num}, K_min:{self.K_min}, K_max:{self.K_max}')
                 X, Y = self.generate_random_walks(k=self.walkers_num, K_min=self.K_min, K_max=self.K_max)
             data_gen_time = time.time() - data_gen_start
