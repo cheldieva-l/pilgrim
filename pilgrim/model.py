@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class ResidualBlock(nn.Module):
-    def __init__(self, hidden_dim, dropout_rate=0.1, activation_function="relu", use_batch_norm=True):
+    def __init__(self, hidden_dim, dropout_rate=0.1, activation_function="mish", use_batch_norm=True):#relu
         super(ResidualBlock, self).__init__()
         self.fc1 = nn.Linear(hidden_dim, hidden_dim)
         self.bn1 = nn.BatchNorm1d(hidden_dim) if use_batch_norm else None
@@ -37,7 +37,7 @@ class ResidualBlock(nn.Module):
             raise ValueError(f"Unknown activation function: {name}")
 
 class Pilgrim(nn.Module):
-    def __init__(self, state_size, hd1=5000, hd2=1000, nrd=2, output_dim=1, dropout_rate=0.1, activation_function="relu", use_batch_norm=True):
+    def __init__(self, state_size, hd1=5000, hd2=1000, nrd=2, output_dim=1, dropout_rate=0.1, activation_function="mish", use_batch_norm=True): #relu
         super(Pilgrim, self).__init__()
         self.hd1 = hd1
         self.hd2 = hd2
