@@ -20,6 +20,10 @@ class Trainer:
         self.num_epochs = num_epochs
         self.batch_size = batch_size
         self.criterion = torch.nn.MSELoss()
+                    
+        self.train_size = train_size
+        self.generate_train_epoch = generate_train_epoch
+                    
         if optimizer == 'Adam':
             self.optimizer = torch.optim.Adam(self.net.parameters(), lr=lr)
         elif optimizer == 'AdamSF':
@@ -90,7 +94,7 @@ class Trainer:
 
             # Data generation
             data_gen_start = time.time()
-            if (self.epoch-1)%generate_train_epoch==0: #4096
+            if (self.epoch-1)%self.generate_train_epoch==0: #4096
                 print(f'generate_random_walks epoch-1:{self.epoch-1}, walkers_num:{self.walkers_num}, K_min:{self.K_min}, K_max:{self.K_max}')
                 X, Y = self.generate_random_walks(k=self.walkers_num, K_min=self.K_min, K_max=self.K_max)
             data_gen_time = time.time() - data_gen_start
